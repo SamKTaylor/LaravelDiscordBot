@@ -1,0 +1,39 @@
+#name: DOCKER BUILD
+#on:
+  #push:
+    #branches:
+    #  - master
+#jobs:
+  #build:
+    #runs-on: ubuntu-latest
+    #steps:
+    #- uses: actions/checkout@master
+
+    #- uses: actions/delete-package-versions@v1
+    #  with:
+    #    package-name: 'dev_web'
+
+    # - uses: actions/delete-package-versions@v1
+    #  with:
+    #    package-name: 'prod_web'
+
+    #- name: Push to GitHub Packages - Development
+    #  uses: docker/build-push-action@v1
+    #  with:
+    #    username: ${{ github.actor }}
+    #    password: ${{ github.token }}
+    #    dockerfile: Dockerfile-dev
+    #    registry: docker.pkg.github.com
+    #    repository: samktaylor/internalforms/dev_web
+    #    tags: "latest"
+
+    #- name: Push to GitHub Packages - Production
+    #  uses: docker/build-push-action@v1
+    #  with:
+    #    username: ${{ github.actor }}
+    #    password: ${{ github.token }}
+    #    dockerfile: Dockerfile-prod
+    #    registry: docker.pkg.github.com
+    #    repository: samktaylor/internalforms/prod_web
+    #    tag_with_sha: true
+

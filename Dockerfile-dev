@@ -1,0 +1,67 @@
+FROM debian:buster-slim
+
+########### Install Dependencies ###########
+
+RUN requirements="supervisor nginx php7.3-fpm cron unzip git curl procps" \
+    && phpmodules="php7.3-xml php7.3-mysql php7.3-gd php7.3-mbstring php7.3-zip php7.3-intl php7.3-xsl php7.3-soap php7.3-bcmath php7.3-mysqli php7.3-curl php7.3-redis php7.3-bz2 php7.3-ldap" \
+    && apt-get update \
+    && apt-get install -y $requirements \
+    && apt-get install -y $phpmodules \
+    && rm -rf /var/lib/apt/lists/* \
+    && requirementsToRemove="" \
+    && apt-get purge --auto-remove -y $requirementsToRemove
+
+ENV COMPOSER_HOME /var/www/.composer/
+RUN curl -sS https://getcomposer.org/installer | php \
+    && mv composer.phar /usr/local/bin/composer
+
+########### WEB CONFIGS ###########
+
+# Remove default configs
+RUN rm /var/www/html/index.nginx-debian.html \
+    && rm /etc/nginx/sites-enabled/default \
+    && rm /etc/php/7.3/fpm/pool.d/www.conf
+
+COPY ./docker/nginx/sites-enabled-dev/* /etc/nginx/sites-enabled/
+#COPY ./docker/nginx/conf.d/* /etc/nginx/conf.d/
+COPY ./docker/php-fpm/pool.d/* /etc/php/7.3/fpm/pool.d/
+
+RUN mkdir /var/run/php
+
+RUN echo "memory_limit=2048M" > /etc/php/7.3/fpm/conf.d/memory-limit.ini
+RUN echo "post_max_size=100M" > /etc/php/7.3/fpm/conf.d/post-max-size.ini
+RUN echo "upload_max_filesize=100M" > /etc/php/7.3/fpm/conf.d/upload-max-filesize.ini
+
+RUN echo "client_max_body_size 100M;" > /etc/nginx/conf.d/client-max-body-size.conf
+
+########### CRON ###########
+
+COPY ./docker/cron/laravel /etc/cron.d/laravel
+RUN chmod 0644 /etc/cron.d/laravel
+RUN crontab /etc/cron.d/laravel
+
+# Copy over or supervisor config
+COPY ./docker/supervisord.conf /etc/supervisor/supervisord.conf
+RUN chmod 0644 /etc/supervisor/supervisord.conf
+
+########## SCRIPTS ##########
+
+COPY ./docker/scripts/ /scripts/
+RUN chmod -R 700 /scripts/
+
+########## Logfiles to stdout & stderr ############
+
+RUN ln -sf /proc/1/fd/1 /var/log/nginx/access.log \
+    && ln -sf /proc/1/fd/1 /var/log/nginx/error.log \
+    && ln -sf /proc/1/fd/1 /var/log/php7.3-fpm.log \
+    && ln -sf /proc/1/fd/1 /var/log/cron.log
+
+########## purge apt ############
+RUN apt-get purge -y --auto-remove \
+    && rm -rf "$tempDir" /etc/apt/sources.list.d/temp.list;
+
+########### EXPOSE Port 80 ###########
+
+EXPOSE 80/tcp
+
+CMD ["/usr/bin/supervisord", "--configuration=/etc/supervisor/supervisord.conf"]

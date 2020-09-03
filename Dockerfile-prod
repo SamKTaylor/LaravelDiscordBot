@@ -1,0 +1,14 @@
+# FROM docker.pkg.github.com/samktaylor/internalforms/dev_web:latest
+
+# RUN rm -r /etc/nginx/sites-enabled
+# COPY ./docker/nginx/sites-enabled-prod/* /etc/nginx/sites-enabled/
+
+########### Clone Repos ###########
+
+# COPY ./src/ /var/www/html
+
+# RUN cd /var/www/html \
+    && composer update \
+    && rm -r /var/www/html/.env \
+    && mv /var/www/html/.env.production /var/www/html/.env \
+    && chown -R www-data:www-data  /var/www/html

@@ -1,0 +1,2 @@
+* * * * * /usr/bin/php /var/www/html/artisan schedule:run >/proc/1/fd/1 2>&1
+* * * * * //usr/bin/php /var/www/html/artisan queue:work --once >/proc/1/fd/1 2>&1
