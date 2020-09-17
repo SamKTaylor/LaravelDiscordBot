@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "487f1a2d483823cc675879d3dffc11e2",
+    "content-hash": "7167d3b4d6adef89f9206903f187d925",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -5775,6 +5775,7 @@
                 }
             ],
             "description": "Asynchronous adapter for different Guzzle versions powered by react/http-client",
+            "abandoned": "react/http",
             "time": "2019-04-02T08:22:57+00:00"
         },
         {
@@ -5821,6 +5822,7 @@
                 }
             ],
             "description": "Asyncronous Guzzle (PSR7) adapter powered by react/http-client",
+            "abandoned": "react/http",
             "time": "2019-04-12T16:45:25+00:00"
         },
         {
